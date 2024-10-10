@@ -1,9 +1,26 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 
 export default function Home(){
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const [isDrawing, setIsDrawing] = useState(false);
+
+    useEffect(() =>{
+        const canvas = canvasRef.current;
+
+        if (canvas){
+            const ctx = canvas.getContext('2d');
+            if (ctx) {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight - canvas.offsetTop;
+                // for brush tyupe below
+                ctx.lineCap = 'round';
+                // for brush size
+                ctx.lineWidth = 3;
+            }
+        }
+    },[])
+
     const startDrawing = (e: React.MouseEvent<HTMLCanvasElement>) => {
         const canvas = canvasRef.current;
         if (canvas){
@@ -19,6 +36,21 @@ export default function Home(){
     const stopDrawing = () => {
         setIsDrawing(false);
     }
+    const draw = (e: React.MouseEvent<HTMLCanvasElement>) => {
+        if (!isDrawing){
+            return;
+        }
+        const canvas = canvasRef.current;
+        if (canvas){
+            const ctx = canvas.getContext('2d');
+            if (ctx) {
+                ctx.strokeStyle = 'white';
+                ctx.lineTo(e.nativeEvent.offsetX, e.nativeEvent.offsetY);
+                ctx.stroke();
+            }
+        }
+    };
+
     return(
         <>
         <canvas
@@ -28,6 +60,7 @@ export default function Home(){
         onMouseDown={startDrawing}
         onMouseOut={stopDrawing}
         onMouseUp={stopDrawing}
+        onMouseMove={draw}
     />
     </>
     );
