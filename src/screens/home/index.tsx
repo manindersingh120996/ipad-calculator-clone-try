@@ -22,6 +22,8 @@ export default function Home(){
     const [color, setColor] = useState('rgb(255,255,255)');
     const [reset, setReset] = useState(false);
     const [result, setResult] = useState<GeneratedResult>();
+    const [latexExpression, setLatexExpression] = useState<Array<string>>([]);
+    const [latexPosition, setLatexPosition]
     const [dictOfVars, setDictofVars] = useState({});
 
 
@@ -37,6 +39,7 @@ export default function Home(){
 
         if (canvas){
             const ctx = canvas.getContext('2d');
+            console.log(`${import.meta.env.VITE_API_URL}/calculate`);
             if (ctx) {
                 canvas.width = window.innerWidth;
                 canvas.height = window.innerHeight - canvas.offsetTop;
@@ -46,14 +49,30 @@ export default function Home(){
                 ctx.lineWidth = 3;
             }
         }
+
+        const script = document.createElement('script')
+        script.src = 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/config/TeX-MML-AM_CHTML.js'
+        script.async = true;
+        document.head.appendChild(script);
+        script.onload = () => {
+            window.MathJax.Hub.config({
+                tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
+            })
+        };
+
+        return () => {
+            document.head.removeChild(script);
+        }
+
     },[]);
 
     const sendData = async() => {
         const canvas = canvasRef.current;
+        console.log(`${import.meta.env.VITE_API_URL}/calculate`);
         if (canvas) {
             const response = await axios({
                 method: 'post',
-                url: '${import.meta.env.VITE_API_URL}/calculate',
+                url: `${import.meta.env.VITE_API_URL}/calculate`,
                 data:{
                     image: canvas.toDataURL('image/png'),
                     dict_of_vars : dictOfVars,
