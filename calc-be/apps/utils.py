@@ -58,9 +58,13 @@ def analyze_image(img:base64, dict_of_vars:dict):
 )
     response = chat_completion.choices[0].message.content
     print(response)
-    response = list(response)[0]
+    # response = list(response)[0]
     print(response)
     answers = []
+    data = {'data':response}
+    
+    data = json.dumps(data)
+    # data = ast.literal_eval(data)
 
     try:
         answers = ast.literal_eval(response)
@@ -72,4 +76,5 @@ def analyze_image(img:base64, dict_of_vars:dict):
             answer['assign'] = True
         else:
             answer['assign'] = False
-    return answers
+    # answer['assign'] = True
+    return data#answers
